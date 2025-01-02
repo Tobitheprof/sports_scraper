@@ -7,31 +7,30 @@ class MirrorSpiderSpider(scrapy.Spider):
     allowed_domains = ["www.mirror.co.uk"]
     start_urls = ["https://www.mirror.co.uk/sport/football/"]
 
+    def __init__(self, keywords=None, *args, **kwargs):
+        super(MirrorSpiderSpider, self).__init__(*args, **kwargs)
+        # Parse the keywords argument and store it as a list
+        self.keywords = keywords.split(",") if keywords else []
+
     def parse(self, response):
         links = response.css("article.story a::attr(href)").getall()
-
 
         for link in links:
             yield scrapy.Request(response.urljoin(link), callback=self.parse_details)
 
-    
     def parse_details(self, response):
-
         item = SportsScraperItem()
 
         item['title'] = response.css("h1.lead-content__title::text").get()
         item['url'] = response.url
         item['author'] = response.css("a.publication-theme::text").get()
-
         item['date'] = response.css("span.time-container::text").get()
-
         item['body'] = response.css("div p::text").getall()
         item['source'] = "Mirror UK"
 
-        yield item
+        # Combine the fields for keyword matching
+        article_text = " ".join([item['title'] or "", " ".join(item['body'])])
 
-
-
-    
-
-
+        # Check for keywords in the article text
+        if not self.keywords or any(keyword.lower() in article_text.lower() for keyword in self.keywords):
+            yield item

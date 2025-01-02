@@ -7,6 +7,12 @@ class MetroSpiderSpider(scrapy.Spider):
     allowed_domains = ["metro.co.uk"]
     start_urls = ["https://metro.co.uk/sport/football/"]
 
+    
+    def __init__(self, keywords=None, *args, **kwargs):
+        super(MetroSpiderSpider, self).__init__(*args, **kwargs)
+        # Parse the keywords argument and store it as a list
+        self.keywords = keywords.split(",") if keywords else []
+    
     def parse(self, response):
         links = response.css("h3.article-card__title a::attr(href)").getall()
 
@@ -27,9 +33,14 @@ class MetroSpiderSpider(scrapy.Spider):
         item['body'] = self.clean_body(response.css("div.article__content__inner p::text").getall())
         item['source'] = "Metro UK"
 
-        yield item
+        # Combine the fields for keyword matching
+        article_text = " ".join([item['title'] or "", " ".join(item['body'])])
 
+        # Check for keywords in the article text
+        if not self.keywords or any(keyword.lower() in article_text.lower() for keyword in self.keywords):
+            yield item
 
+    
     def clean_text(self, text):
         """Clean and normalize text."""
         if text:
