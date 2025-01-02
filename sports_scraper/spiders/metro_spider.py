@@ -20,6 +20,7 @@ class MetroSpiderSpider(scrapy.Spider):
         item['url'] = response.url
         item['author'] = self.clean_text(response.css("a.author-name::text").get())
 
+        # Extract and clean the date
         date_raw = response.css("div.article__date span.article__published *::text").getall()
         item['date'] = self.clean_text(" ".join([text.strip() for text in date_raw if text.strip()]).replace("Published", ""))
 
