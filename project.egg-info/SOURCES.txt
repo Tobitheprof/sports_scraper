@@ -1,0 +1,15 @@
+setup.py
+project.egg-info/PKG-INFO
+project.egg-info/SOURCES.txt
+project.egg-info/dependency_links.txt
+project.egg-info/entry_points.txt
+project.egg-info/top_level.txt
+sports_scraper/__init__.py
+sports_scraper/items.py
+sports_scraper/middlewares.py
+sports_scraper/pipelines.py
+sports_scraper/settings.py
+sports_scraper/spiders/__init__.py
+sports_scraper/spiders/bbc_spider.py
+sports_scraper/spiders/metro_spider.py
+sports_scraper/spiders/mirror_spider.py
